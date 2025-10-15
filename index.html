@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamAI Studio - Visualise Your Dreams</title>
+    <style>
+        /* CSS for a clean, modern look */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f4f8;
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #4a5568;
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+        p {
+            color: #718096;
+            margin-bottom: 25px;
+        }
+        #prompt {
+            width: 90%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-right: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3f51b5; /* Dreamy Blue/Violet */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+        button:hover {
+            background-color: #303f9f;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        #image-area {
+            margin-top: 30px;
+            min-height: 256px;
+            background-color: #e2e8f0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        #img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transition: opacity 0.5s;
+        }
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #3f51b5;
+            width: 30px;
+            height: 30px;
+            -webkit-animation: spin 1s linear infinite; /* Safari */
+            animation: spin 1s linear infinite;
+        }
+        /* Safari */
+        @-webkit-keyframe spin {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dream Visualizer</h1>
+        <p>Type the description of your dream below and watch the AI bring it to life.</p>
+        
+        <input id="prompt" type="text" placeholder="e.g., A surreal dream of a floating elephant over Kerala, vibrant colors, photorealistic" />
+        <button onclick="generateImage()">Visualize</button>
+
+        <div id="image-area">
+            <img id="img" width="512" style="display:none;">
+            <div id="status">Enter your dream above to get started.</div>
+        </div>
+    </div>
+
+    <script>
+    function generateImage() {
+        const promptInput = document.getElementById('prompt');
+        const imgElement = document.getElementById('img');
+        const statusElement = document.getElementById('status');
+        const promptText = promptInput.value.trim();
+
+        if (promptText === "") {
+            alert("Please describe your dream!");
+            return;
+        }
+
+        // 1. Show Loading State
+        imgElement.style.display = 'none';
+        statusElement.innerHTML = '<div class="loader"></div><p style="margin-top: 15px; color: #3f51b5;">Generating your dream... (This can take 20-60 seconds)</p>';
+
+        // 2. Encode the prompt for the URL
+        const encodedPrompt = encodeURIComponent(promptText + ", cinematic lighting, unreal engine, fantasy concept art, highly detailed");
+        
+        // 3. Construct the Pollinations URL
+        const url = `https://image.pollinations.ai/prompt/${encodedPrompt}`;
+        
+        // 4. Set the image source
+        imgElement.onload = () => {
+            statusElement.innerHTML = '';
+            imgElement.style.display = 'block';
+        };
+
+        imgElement.onerror = () => {
+            statusElement.innerHTML = '<p style="color: red;">Error generating image. Please try a different prompt.</p>';
+        };
+        
+        // The magic line that tells the AI to generate the image:
+        imgElement.src = url + `?t=${new Date().getTime()}`;
+    }
+    </script>
+</body>
+</html>
